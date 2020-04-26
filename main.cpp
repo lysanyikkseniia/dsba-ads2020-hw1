@@ -8,7 +8,7 @@ void importRes()
     std::ofstream result;
     result.open("/Users/macbook/se/projects/HW1/result.csv");
     int k = 1;
-    for (int i = 1; i <= 20; i+=k)
+    for (int i = 1; i <= 5000; i+=k)
     {
         std::cout << i << ", ";
         result << i << ", ";
