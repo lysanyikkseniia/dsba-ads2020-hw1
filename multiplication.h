@@ -13,14 +13,14 @@ public:
     Number multTen(int i) const;
     std::pair<Number, Number> splitIntoHalves() const;
 
-    short& operator[](int i) {return reinterpret_cast<short &>(_inf[i]);}
+    short& operator[](int i) {return _inf[i];}
     short operator[](int i) const {return _inf[i];}
     Number operator+(Number b) const;
     Number operator-(Number b) const;
-    bool operator==(Number b) const {return (_inf == b._inf);};
+    bool operator==(const Number& b) const {return (_inf == b._inf);};
 
-//private:
-    std::vector<int> _inf;
+private:
+    std::vector<short> _inf;
 };
 
 class Multiplicator
@@ -28,9 +28,26 @@ class Multiplicator
 public:
     static Number numGenerator(int i);
     static void makeEqualSize(Number& a, Number& b);
-    static Number gradeSch(const Number& a, const Number& b);
-    static Number divCon(Number a, Number b);
 };
+
+class GS : public Multiplicator
+{
+public:
+    static Number Multiplication(const Number& a, const Number& b);
+};
+
+class DC : public Multiplicator
+{
+public:
+    static Number Multiplication(Number a, Number b);
+};
+
+class KR : public Multiplicator
+{
+public:
+    static Number Multiplication(Number a, Number b);
+};
+
 
 #ifndef HW1_MULTIPLICATION_H
 #define HW1_MULTIPLICATION_H

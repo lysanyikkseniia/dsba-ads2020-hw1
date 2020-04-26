@@ -1,27 +1,69 @@
 #include <iostream>
 #include "multiplication.h"
-void test1()
+#include <cmath>
+#include <fstream>
+
+void importRes()
 {
-    for (int i = 1; i < 100; i += 10)
+    std::ofstream result;
+    result.open("/Users/macbook/se/projects/HW1/result.csv");
+    int k = 1;
+    for (int i = 1; i <= 20; i+=k)
     {
-        for (int j = 1; j < 5; j++)
+        std::cout << i << ", ";
+        result << i << ", ";
+        double time = 0;
+        for(int j = 0; j < 3; ++j)
         {
             Number a = Multiplicator::numGenerator(i);
             Number b = Multiplicator::numGenerator(i);
-            Number c1 = Multiplicator::gradeSch(a, b);
-            Number c2 = Multiplicator::divCon(a, b);
-
-            if (!(c1 == c2))
-            {
-                std::cout << i << " ERROR" << std::endl;
-            }
+            std::chrono::time_point<std::chrono::steady_clock> begin = std::chrono::steady_clock::now();
+            Number c = GS::Multiplication(a, b);
+            std::chrono::time_point<std::chrono::steady_clock> end = std::chrono::steady_clock::now();
+            double duration = std::chrono::duration<double>(end - begin).count();
+            time += duration;
         }
+        time /= 3;
+        std::cout << time << ", ";
+        result << time << ", ";
+        time = 0;
+        for(int j = 0; j < 3; ++j)
+        {
+            Number a = Multiplicator::numGenerator(i);
+            Number b = Multiplicator::numGenerator(i);
+            std::chrono::time_point<std::chrono::steady_clock> begin = std::chrono::steady_clock::now();
+            Number c = DC::Multiplication(a, b);
+            std::chrono::time_point<std::chrono::steady_clock> end = std::chrono::steady_clock::now();
+            double duration = std::chrono::duration<double>(end - begin).count();
+            time += duration;
+        }
+        time /= 3;
+        std::cout << time << ", ";
+        result << time << ", ";
+        time = 0;
+        for(int j = 0; j < 3; ++j)
+        {
+            Number a = Multiplicator::numGenerator(i);
+            Number b = Multiplicator::numGenerator(i);
+            std::chrono::time_point<std::chrono::steady_clock> begin = std::chrono::steady_clock::now();
+            Number c = KR::Multiplication(a, b);
+            std::chrono::time_point<std::chrono::steady_clock> end = std::chrono::steady_clock::now();
+            double duration = std::chrono::duration<double>(end - begin).count();
+            time += duration;
+        }
+        time /= 3;
+        std::cout << time << '\n';
+        result << time << '\n';
+        if (i == 100)
+            k = 10;
+        if (i == 1000)
+            k = 250;
     }
+    result.close();
 }
 
 int main() {
     srand(time(nullptr));
-    test1();
-    int i = 0;
+    importRes();
     return 0;
 }
