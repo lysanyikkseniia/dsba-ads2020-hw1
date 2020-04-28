@@ -1,0 +1,211 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% Template for lab reports used at STIMA
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Sets the document class for the document
+% Openany is added to remove the book style of starting every new chapter on an odd page (not needed for reports)
+\documentclass[10pt,swedish, openany]{book}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Loading packages that alter the style
+\usepackage[]{graphicx}
+\usepackage[]{color}
+\usepackage{alltt}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{graphicx}
+\usepackage{listings}
+\setcounter{secnumdepth}{3}
+\setcounter{tocdepth}{3}
+\setlength{\parskip}{\smallskipamount}
+\setlength{\parindent}{0pt}
+
+% Set page margins
+\usepackage[top=100pt,bottom=100pt,left=68pt,right=66pt]{geometry}
+
+% Package used for placeholder text
+\usepackage{lipsum}
+
+% Prevents LaTeX from filling out a page to the bottom
+\raggedbottom
+
+% Adding both languages, Swedish and English, so they can be used intermittently in for example abstracts.
+\usepackage[swedish, english]{babel}
+
+% All page numbers positioned at the bottom of the page
+\usepackage{fancyhdr}
+\fancyhf{} % clear all header and footers
+\fancyfoot[C]{\thepage}
+\renewcommand{\headrulewidth}{0pt} % remove the header rule
+\pagestyle{fancy}
+
+% Changes the style of chapter headings
+\usepackage{titlesec}
+\titleformat{\chapter}
+   {\normalfont\LARGE\bfseries}{\thechapter.}{1em}{}
+% Change distance between chapter header and text
+\titlespacing{\chapter}{0pt}{50pt}{2\baselineskip}
+
+% Adds table captions above the table per default
+\usepackage{float}
+\floatstyle{plaintop}
+\restylefloat{table}
+
+% Adds space between caption and table
+\usepackage[tableposition=top]{caption}
+
+% Adds hyperlinks to references and ToC
+\usepackage{hyperref}
+\hypersetup{hidelinks,
+            linkcolor = blue} % Changes the link color to black and hides the hideous red border that usually is created
+
+% If multiple images are to be added, a folder (path) with all the images can be added here 
+\graphicspath{ {images/} }
+
+% Separates the first part of the report/thesis in Roman numerals
+\frontmatter
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Starts the document
+\begin{document}
+
+%%% Selects the language to be used for the first couple of pages
+\selectlanguage{english}
+
+%%%%% Adds the title page
+\begin{titlepage}
+	\clearpage\thispagestyle{empty}
+	\centering
+	\vspace{2cm}
+
+	% Titles
+	{\large DSBA Algorithms and Data Structures \par}
+	\vspace{4cm}
+	{\Huge \textbf{Homework 1}} \\
+	\vspace{1cm}
+	{\large \textbf{Report} \par}
+	\vspace{4cm}
+	{\normalsize Lysanyuk Kseniia  \\ % \\ specifies a new line
+	             Group 191-2  \par}
+	\vspace{6 cm}
+    
+	% Information about the University
+		
+	% Set the date
+	{\normalsize Supervisor - Sergey Shershakov \\
+	April 2020 \par}
+	\vspace{2cm}
+	
+	\pagebreak
+
+\end{titlepage}
+	
+\mainmatter
+
+\chapter{Problem statement}
+\section*{Task}
+The goal of the current task was to estimate the running time of different multiplication algorithms experimentally and compare with theoretical calculations. Three different approaches were used:
+
+\begin{itemize}
+    \item 
+    Grade School multiplication;
+    \item
+    Divide and Conquer multiplication; 
+    \item
+    Karatsuba multiplication.
+\end{itemize}
+
+\section*{Theoretical background}
+A widely used, but not so effective method is Grade School multiplication, which requires $O(n^2)$ elementary operations (adding and multiplying one-digit numbers). Basic Divide and Conquer approach also has the same complexity. Karatsuba, although it is also referred to as "Divide and Conquer" algorithm requires only $O(n^{\log_{2}{3}})$, as it uses three recursive multiplications instead of four (\href{http://www.ccas.ru/personal/karatsuba/divcen.pdf}{A. A. Karatsuba (1995). "The Complexity of Computations"}).
+
+\section*{Research plan}
+My research plan for the task is as follows:
+\begin{enumerate}
+    \item 
+    Create a C++ project, implement a class Number representing big numbers, equip it with all necessary semantics;
+    \item 
+    Develop a class Multiplicator and three inherited classes, for each algorithm;
+    \item
+    Generate random numbers of length from 1 to 10000 and measure the mean running time of all algorithms for each input;
+    \item
+    Using Python to create a graph plot, illustrate asymptotic run time of algorithms which is to analyze in this report, compare the results with theoretical.
+\end{enumerate}
+
+
+\chapter{Implementation details}
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=1.15\textwidth]{UML Class.png}
+    \caption{An UML Class diagram}
+    \label{mesh1}
+\end{figure}
+\section*{Class Number}
+
+As C++ does not have in-built type for storing numbers with big number of digits, custom class Number was implemented. I have chosen std::vector of shorts for inner representation of those numbers to avoid conversions between types. 
+
+This class was equipped with such semantics as performing primitive operations:
+\begin{itemize}
+    \item 
+    splitting into halves;
+    \item 
+    adding and substrating two numbers using operator+ and operator- respectively;
+    \item 
+    comparing using operator== (is not used in final version, was used for debugging only);
+    \item 
+    referencing to individual components of a number using const and non-const overloads of operator[ ] 
+\end{itemize}
+and some more (less important) ones.
+
+\section*{Class Multiplicator}
+
+The parent class called Multiplicator provides auxiliary methods for calculating a product of two integer numbers:
+\begin{itemize}
+    \item 
+    numGenerator generates a random Number of given length using rand();
+    \item 
+    makeEqualSize is quite self-descriptive.
+\end{itemize}
+
+\subsection*{Sub-classes: SM, DC, KR}
+
+Classes SM, DC, KR are used to implement School Grade Multiplication, Divide and Conquer and Karatsuba respectively. They all have only one static method - multiplication itself, while auxiliary methods are inherited from the parent class Multiplicator.
+
+\section*{Measurements}
+
+A function for measurements is importRes. In a loop it generates three pairs of random numbers. When the numbers are shorter than 100 the increment is 1, from 100 to 1000 it is 10, from 1000 to 4000 it is 50. Using chrono library it calculates time needed for each multiplication and puts mean results for three pairs to CSV file straightaway.
+
+\section*{Repository URL}
+
+They say that picture is worth a thousand words, so for the whole program \href{https://github.com/lysanyikkseniia/dsba-ads2020-hw1}{click here} or go to the next url: \url{https://github.com/lysanyikkseniia/dsba-ads2020-hw1}.
+
+
+\chapter{Results and discussion}
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.81\textwidth]{graph.jpeg}
+    \caption{Running times}
+    \label{mesh1}
+\end{figure}
+
+In the graph created by Python the result is clearly do not match with theoretical calculations. For "short" numbers (shorter than 50 digits) all three algorithms perform with almost same pace. 
+
+Divide and conquer approach stands from others being the slowest one. It also has "jumps" which are interchanged with almost linear plateaus.  
+
+Grade School Multiplication and Karatsuba are quite faster, although the last one shows a bit worse result. 
+
+
+\chapter{Conclusion}
+
+Practical results stay far away from theoretical ones. The Grade School Multiplication showed the best results on both "small" and "big" numbers, while recursive algorithms turned out to be much slower. As the algorithms themselves are implemented correctly, it may be caused by poor implementation of class Number and lack of necessary semantics.
+
+Further improvement opportunities:
+\begin{itemize}
+    \item
+    Implement the algorithms the way which is to avoid doing unnecessary copies and optimize code from point of memory consumption.
+    \item
+    Decompose method which calculates time and puts information into CSV-file.
+\end{itemize}
+
+\pagebreak
+
+\end{document}
